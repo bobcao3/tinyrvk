@@ -24,7 +24,6 @@ SECTIONS
 
   # Why do we have this anyways?
   .eh_frame : {
-    *(.eh_frame)
   }
 
   .rodata : {
