@@ -13,8 +13,7 @@ void init() {
 }  // namespace tinyrvk
 
 extern "C" {
-__attribute__((section(".text.init")))
-void _start() {
+void _cpp_entry() {
   tinyrvk::init();
 
   while (true) {

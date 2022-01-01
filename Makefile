@@ -14,5 +14,5 @@ LDFLAGS = -T link.lds -nostdlib
 %.cpp.o: %.cpp
 	$(CXX) $(TARGET) $(CXXFLAGS) -c -o $(BINARY_DIR)/$@ $<
 
-kernel: init.cpp.o uart.cpp.o
+kernel: init.cpp.o uart.cpp.o init.S.o
 	$(LD) $(TARGET) $(LDFLAGS) -o $@ $(BINARY_DIR)/*.o
