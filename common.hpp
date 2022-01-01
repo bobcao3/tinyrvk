@@ -62,4 +62,8 @@ class RingBuffer {
   }
 };
 
+constexpr size_t align_up_pot(size_t v, size_t bits) {
+  return ((v >> bits) + (v & ((1 << bits) - 1)) ? 1 : 0) << bits;
+}
+
 }

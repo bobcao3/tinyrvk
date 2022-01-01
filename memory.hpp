@@ -225,7 +225,6 @@ constexpr size_t kPageSizeBits = 12;
 
 class PhysicalMemoryManager {
  private:
-  BitMap bitmap;
   PAddr *free_stack;
   size_t free_stack_size;
 
@@ -246,10 +245,3 @@ class PageTable {
 
 }  // namespace memory
 }  // namespace tinyrvk
-
-extern "C" {
-extern size_t _heap_start;
-extern size_t _memory_start;
-extern size_t _memory_end;
-}
-

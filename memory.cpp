@@ -1,19 +1,23 @@
 #include "memory.hpp"
 
+extern "C" size_t _bss_end;
+
 namespace tinyrvk {
 namespace memory {
 
-PhysicalMemoryManager::PhysicalMemoryManager(size_t dram_base, size_t dram_size) : bitmap(_heap_start) {
-  size_t bitmap_end = _heap_start + BitMap::compute_size(dram_size >> kPageSizeBits);
-  size_t bitmap_end_page = (bitmap_end >> kPageSizeBits) + ((bitmap_end & (kPageSize - 1)) ? 1 : 0);
-  free_stack = (PAddr *)(bitmap_end);
+PhysicalMemoryManager::PhysicalMemoryManager(size_t dram_base, size_t dram_size) {
+  size_t head = (size_t)&_bss_end;
+  free_stack = (PAddr*)head;
+  head += (dram_size >> kPageSizeBits) * sizeof(size_t);
 
-  size_t available_dram = (dram_size - _heap_start) ;
+  head = align_up_pot(head, kPageSizeBits);
+
+  size_t available_dram = (dram_base + dram_size - head) ;
   size_t num_stack_pages = 1;
   size_t available_pages = (available_dram >> kPageSizeBits) - num_stack_pages;
   free_stack_size += available_pages;
 
-  PAddr curr_page { .addr = bitmap_end_page << kPageSizeBits };
+  PAddr curr_page { .addr = head };
   for (size_t i = 0; i < available_pages; i++) {
     free_stack[i] = curr_page;
     curr_page.addr += kPageSize;

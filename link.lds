@@ -45,8 +45,8 @@ SECTIONS
   } >ram AT>ram :bss
   
   . = ALIGN(4096);
-  PROVIDE(_heap_start = .);
+  _heap_start = .;
 
-  PROVIDE(_memory_start = ORIGIN(ram));
-  PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
+  _memory_start = ORIGIN(ram);
+  _memory_end = ORIGIN(ram) + LENGTH(ram);
 }
