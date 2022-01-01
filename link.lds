@@ -22,6 +22,11 @@ SECTIONS
     PROVIDE(_text_end = .);
   } >ram AT>ram :text
 
+  # Why do we have this anyways?
+  .eh_frame : {
+    *(.eh_frame)
+  }
+
   .rodata : {
     PROVIDE(_rodata_start = .);
     *(.rodata .rodata.*)

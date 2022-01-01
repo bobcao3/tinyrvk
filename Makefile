@@ -3,9 +3,9 @@ AS = clang
 LD = clang
 BINARY_DIR = build
 MODULE_DIR = $(BINARY_DIR)/modules
-TARGET = --target=riscv64 -march=rv64gc
-CXXFLAGS = -mno-relax -fmodules -g -std=c++20 -fPIC -Ilibcxx/include
-ASMFLAGS = -mno-relax -g
+TARGET = --target=riscv64 -march=rv64gc -mabi=lp64
+CXXFLAGS = -mno-relax -fmodules -g -std=c++20 -fPIC -Ilibcxx/include -O2 -flto=thin
+ASMFLAGS = -mno-relax -g -O2
 LDFLAGS = -T link.lds -nostdlib
 
 %.S.o: %.S

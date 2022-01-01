@@ -42,7 +42,7 @@ class UART : public utils::SerialConsoleDevice {
     LSR_EF = 0x80, /* Erroneous data in FIFO */
   };
 
-  UARTCtrlRegs *regs;
+  volatile UARTCtrlRegs *regs;
 
  public:
   struct UARTParams {
