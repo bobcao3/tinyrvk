@@ -1,18 +1,23 @@
-CXX = clang++
-AS = clang
-LD = clang
+CLANG ?= clang
+OBJCOPY ?= llvm-objcopy
 BINARY_DIR = build
 MODULE_DIR = $(BINARY_DIR)/modules
-TARGET = --target=riscv64 -march=rv64gc -mabi=lp64
-CXXFLAGS = -mno-relax -fmodules -g -std=c++20 -fPIC -Ilibcxx/include -O2 -flto=thin
+TARGET = --target=riscv64 -march=rv64gc -mabi=lp64 -mcmodel=medany
+CXXFLAGS = -mno-relax -g -fmodules -std=c++20 -Ilibcxx/include -O2 -flto=thin -fno-threadsafe-statics
 ASMFLAGS = -mno-relax -g -O2
 LDFLAGS = -T link.lds -nostdlib
 
+CXXSRCS=$(wildcard *.cpp)
+CXXOBJS=$(CXXSRCS:.cpp=.cpp.o)
+
 %.S.o: %.S
-	$(AS) $(TARGET) $(ASMFLAGS) -c -o $(BINARY_DIR)/$@ $<
+	$(CLANG) $(TARGET) $(ASMFLAGS) -c -o $(BINARY_DIR)/$@ $<
 
 %.cpp.o: %.cpp
-	$(CXX) $(TARGET) $(CXXFLAGS) -c -o $(BINARY_DIR)/$@ $<
+	$(CLANG) $(TARGET) $(CXXFLAGS) -c -o $(BINARY_DIR)/$@ $<
 
-kernel: init.cpp.o uart.cpp.o init.S.o
-	$(LD) $(TARGET) $(LDFLAGS) -o $@ $(BINARY_DIR)/*.o
+kernel.debug: $(CXXOBJS) init.S.o memset.S.o
+	$(CLANG) $(TARGET) $(LDFLAGS) -o $@ $(BINARY_DIR)/*.o
+
+kernel: kernel.debug
+	$(OBJCOPY) -S --remove-section .eh_frame --remove-section .riscv.attributes --output-target binary $< $@

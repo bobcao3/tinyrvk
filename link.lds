@@ -33,19 +33,19 @@ SECTIONS
   } >ram AT>ram :text
 
   .data : {
-    . = ALIGN(4096);
     PROVIDE(_data_start = .);
     *(.sdata .sdata.*) *(.data .data.*)
     PROVIDE(_data_end = .);
   } >ram AT>ram :data
 
-  .bss :{
+  .bss : {
     PROVIDE(_bss_start = .);
     *(.sbss .sbss.*) *(.bss .bss.*)
     PROVIDE(_bss_end = .);
   } >ram AT>ram :bss
   
-  _heap_start = .;
+  . = ALIGN(4096);
+  PROVIDE(_heap_start = .);
 
   PROVIDE(_memory_start = ORIGIN(ram));
   PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
