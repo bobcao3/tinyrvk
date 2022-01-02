@@ -13,7 +13,7 @@ PhysicalMemoryManager::PhysicalMemoryManager(size_t dram_base, size_t dram_size)
   head = align_up_pot(head, kPageSizeBits);
 
   size_t available_dram = (dram_base + dram_size - head) ;
-  size_t num_stack_pages = 1;
+  size_t num_stack_pages = 2;
   size_t available_pages = (available_dram >> kPageSizeBits) - num_stack_pages;
   free_stack_size += available_pages;
 

@@ -12,6 +12,7 @@
 
   .section ".text.init"
   .global _start
+  .global emulate_s_trap
 
 _start:
   addi x1, x0, 0
@@ -50,11 +51,28 @@ _start:
   la t0, trap_entry
   csrw stvec, t0
 
+  # The trap handler uses a different stack
+  # This thread will use its own stack and act as thread 0
   la sp, _memory_end
+  csrw sscratch, sp
+  la sp, _memory_end - 4096
   j _cpp_entry
 
-    .align 2
+.align 2
+emulate_s_trap:
+  li t0, 0x8000000000000001
+  csrw scause, t0
+  la t0, __emulate_s_trap_j
+  csrw sepc, t0
+  li t0, SSTATUS_SPP
+  csrs sstatus, t0
+  j trap_entry
+__emulate_s_trap_j:
+  ret
+
+.align 2
 trap_entry:
+  csrrw sp, sscratch, sp
   addi sp, sp, -272
 
   SREG x1, 1*REGBYTES(sp)
@@ -95,10 +113,6 @@ trap_entry:
   jal handle_trap
   csrw sepc, a0
 
-  # Remain in S-mode after eret
-  li t0, SSTATUS_SPP
-  csrs sstatus, t0
-
   LREG x1, 1*REGBYTES(sp)
   LREG x2, 2*REGBYTES(sp)
   LREG x3, 3*REGBYTES(sp)
@@ -132,4 +146,5 @@ trap_entry:
   LREG x31, 31*REGBYTES(sp)
 
   addi sp, sp, 272
-  mret
+  csrrw sp, sscratch, sp
+  sret
